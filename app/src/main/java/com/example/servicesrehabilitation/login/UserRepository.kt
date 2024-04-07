@@ -2,10 +2,11 @@ package com.example.servicesrehabilitation.login
 
 import android.content.Context
 import android.util.Log
+import com.example.servicesrehabilitation.domain.AppointmentModel
+import com.example.servicesrehabilitation.domain.AppointmentResponse
 import com.example.servicesrehabilitation.domain.AuthToken
 import com.example.servicesrehabilitation.domain.ForumPost
 import com.example.servicesrehabilitation.domain.RehabilitationInfo
-import com.example.servicesrehabilitation.domain.Service
 import com.example.servicesrehabilitation.domain.User
 import com.example.servicesrehabilitation.domain.WorkerInfo
 import retrofit2.Call
@@ -62,11 +63,14 @@ class ForumRepository( private val forumService: ForumService) {
 
 class ServiceRepository( private val appointmentService: AppointmentService) {
 
-    suspend fun getService(): Response<List<Service>>{
+    suspend fun getService(): Response<List<AppointmentResponse>>{
         return appointmentService.getService()
     }
 
-    suspend fun createService(service: Service): Response<Service>{
+    suspend fun createService(service: AppointmentModel): Response<AppointmentResponse>{
         return appointmentService.createService(service)
+    }
+    suspend fun deleteService(appointmentId: Int): Response<Unit> {
+        return appointmentService.deleteService(appointmentId)
     }
 }

@@ -6,4 +6,19 @@ data class User(val id: Int, val username: String, val name: String, val numberP
 
 data class AuthToken(val accessToken: String?)
 
-data class Service(val id: Int, val user_token:String, val sevice_name: String, val perfomer_name: String, val perfomer_id : Int, val date: String )
+data class AppointmentModel(
+    val user_token: String,
+    val service_name: String,
+    val performer_name: String,
+    val performer_id: Int,
+    val date: String
+)
+
+data class AppointmentResponse(
+    val id: Int,
+    val user_token: String,
+    val service_name: String,
+    val performer_name: String,
+    val performer_id: Int,
+    val date: String
+)

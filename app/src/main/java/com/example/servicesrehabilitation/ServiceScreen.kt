@@ -28,10 +28,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.servicesrehabilitation.R
+import com.example.servicesrehabilitation.room.AppDatabase
 import com.example.servicesrehabilitation.workersScreen.WorkerViewModel
 
 @Composable
-fun ServiceScreen(navController: NavController) {
+fun ServiceScreen(navController: NavController,appDatabase: AppDatabase) {
     val backGroundColor = colorResource(id = R.color.custom_light_blue)
     Box(
         modifier = Modifier
@@ -66,8 +67,8 @@ fun ServiceScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                ServiceItem(navController = navController,iconId = R.drawable.training, text = "Дрессировка",serviceType = "training")
-                ServiceItem(navController = navController,iconId = R.drawable.rehabilitation, text = "Реабилитация",serviceType = "rehabilitation")
+                ServiceItem(navController = navController,iconId = R.drawable.training, text = "Дрессировка",serviceType = "training",)
+                ServiceItem(navController = navController,iconId = R.drawable.rehabilitation, text = "Реабилитация",serviceType = "rehabilitation", )
             }
         }
     }

@@ -14,8 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.servicesrehabilitation.Scaffold.NavigationItem
 import com.example.servicesrehabilitation.domain.UserProfile
 import com.example.servicesrehabilitation.forumScreen.ForumScreen
@@ -32,7 +34,9 @@ import com.example.servicesrehabilitation.workersScreen.WorkerViewModel
 fun MainScreen(
     appDatabase: AppDatabase, navHost: NavHostController
 ){
+    var arguments = listOf(navArgument("serviceType") { type = NavType.StringType })
     val navHostController = rememberNavController()
+    val serviceType = arguments.toString()
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -66,7 +70,8 @@ fun MainScreen(
         }){
         AppNavGraph(
             navHostController = navHostController ,
-            serviceScreenContent = { ServiceScreen(navController = navHostController) },
+            appDatabase = appDatabase,
+            serviceScreenContent = { ServiceScreen(navController = navHostController, appDatabase) },
             forumScreenContent = { ForumScreen(navController = navHostController) },
             profileScreenContent = { ProfileScreen(appDatabase, navHostController = navHost)},
         )

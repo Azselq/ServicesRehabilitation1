@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -47,75 +50,84 @@ fun RehabilitationItem(
     rehabilitationInfo: RehabilitationInfo,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(4.dp)
-            .height(40.dp)
-            .border(width = 2.dp, shape = RoundedCornerShape(8.dp), color = Color.Black)
-            .fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = rehabilitationInfo.titleText,
-            modifier = Modifier.padding(4.dp),
-            fontWeight = FontWeight.Bold
-        )
+    Card(modifier = Modifier.padding(8.dp)){
+        Row(
+            modifier = Modifier
+                .clickable(onClick = onClick)
+                .padding(4.dp)
+                .height(40.dp)
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = rehabilitationInfo.titleText,
+                modifier = Modifier.padding(8.dp),
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
+
 }
 
 @Composable
 fun RehabilitationItemDesc(navController: NavController, rehabilitationId: Int) {
+    val backGroundColor = colorResource(id = R.color.custom_light_blue)
     val viewModel: RehabilitationScreenViewModel = viewModel()
     val rehabilitationInfo = viewModel.rehabilitationInfo.collectAsState()
     val loadingState = viewModel.loadingState.collectAsState()
 
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .background(Color.White)
-    ) {
-        when (loadingState.value) {
-            LoadingState.LOADING -> {
-                CircularProgressIndicator()
-            }
+    Box(modifier = Modifier.fillMaxSize().background(backGroundColor)){
+        Card(
+            modifier = Modifier
+                .padding(8.dp).verticalScroll(rememberScrollState())
+        ) {
+            when (loadingState.value) {
+                LoadingState.LOADING -> {
+                    CircularProgressIndicator()
+                }
+                LoadingState.SUCCESS -> {
+                    Card(){
+                        Column(
+                            Modifier.padding(8.dp)
+                        ) {
+                            val rehabilitation = rehabilitationInfo.value[rehabilitationId-1]
+                            Text(
+                                text = rehabilitation.titleText,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Image(
+                                modifier = Modifier.fillMaxWidth().height(200.dp),
+                                painter = rememberAsyncImagePainter(model = rehabilitation.contentImageResId),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = rehabilitation.contentText)
+                        }
+                    }
 
-            LoadingState.SUCCESS -> {
-                Column(
-                    modifier = Modifier.background(Color.White)
-                ) {
-                    val rehabilitation = rehabilitationInfo.value[rehabilitationId-1]
-                    Text(
-                        text = rehabilitation.titleText,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Image(
-                        modifier = Modifier.size(height = 200.dp,width = 500.dp),
-                        painter = rememberAsyncImagePainter(model = rehabilitation.contentImageResId),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = rehabilitation.contentText)
+                }
+
+                LoadingState.ERROR -> {
+                    Text("Произошла ошибка при загрузке данных.")
                 }
             }
 
-            LoadingState.ERROR -> {
-                Text("Произошла ошибка при загрузке данных.")
-            }
         }
-
     }
+
 }
 
 @Composable
 fun RehabilitationList(
     navController: NavController,
 ) {
+    val backGroundColor = colorResource(id = R.color.custom_light_blue)
     val viewModel: RehabilitationScreenViewModel = viewModel()
     val rehabilitation = viewModel.rehabilitationInfo.collectAsState()
     LazyColumn(
+        modifier= Modifier.fillMaxSize().background(backGroundColor),
         contentPadding = PaddingValues(
             top = 16.dp,
             start = 8.dp,

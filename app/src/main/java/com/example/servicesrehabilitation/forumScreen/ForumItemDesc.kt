@@ -34,47 +34,15 @@ import com.example.servicesrehabilitation.domain.WorkerInfo
 
 
 @Composable
-fun ForumItemDesc(
-    forumPost: ForumPost
-){
-    Card(
-        modifier = Modifier.padding(8.dp).background(Color.White)
-    ) {
-        Column(
-            modifier = Modifier.background(Color.White)
-        ) {
-            PostHeaderDesc(forumPost)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = forumPost.titleText,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                ,
-                painter = rememberAsyncImagePainter(model = forumPost.contentImageResId),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = forumPost.contentText )
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
-}
-@Composable
 fun ForumItem(
     forumPost: ForumPost,
     onClick: () -> Unit
 ){
     Card(
-        modifier = Modifier.padding(8.dp).background(Color.White).clickable(onClick = onClick)
+        modifier = Modifier.padding(8.dp).clickable(onClick = onClick)
     ) {
         Column(
-            modifier = Modifier.background(Color.White)
+            Modifier.padding(8.dp)
         ) {
             PostHeaderDesc(forumPost)
             Spacer(modifier = Modifier.height(8.dp))
@@ -83,7 +51,6 @@ fun ForumItem(
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -93,9 +60,7 @@ fun PostHeaderDesc(
     forumPost: ForumPost
 ){
     Row (
-        modifier = Modifier
-        //.fillMaxWidth()
-        ,
+        modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically
     ){
         Image(

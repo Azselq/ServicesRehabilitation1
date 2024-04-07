@@ -1,19 +1,22 @@
 package com.example.servicesrehabilitation.login
 
+import com.example.servicesrehabilitation.domain.AppointmentModel
+import com.example.servicesrehabilitation.domain.AppointmentResponse
 import com.example.servicesrehabilitation.domain.AuthToken
 import com.example.servicesrehabilitation.domain.ForumPost
 import com.example.servicesrehabilitation.domain.RehabilitationInfo
-import com.example.servicesrehabilitation.domain.Service
 import com.example.servicesrehabilitation.domain.User
 import com.example.servicesrehabilitation.domain.WorkerInfo
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface AuthService {
     @FormUrlEncoded
@@ -46,7 +49,10 @@ interface ForumService {
 
 interface AppointmentService {
     @POST("/appointments/")
-        suspend fun createService(@Body service: Service): Response<Service>
+        suspend fun createService(@Body service: AppointmentModel): Response<AppointmentResponse>
     @GET("/appointments/")
-        suspend fun getService(): Response<List<Service>>
+        suspend fun getService(): Response<List<AppointmentResponse>>
+
+    @DELETE("/appointments/{appointment_id}")
+    suspend fun deleteService(@Path("appointment_id") appointmentId: Int): Response<Unit>
 }

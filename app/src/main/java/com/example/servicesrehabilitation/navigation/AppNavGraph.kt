@@ -11,15 +11,16 @@ import androidx.navigation.navArgument
 import com.example.servicesrehabilitation.MainScreen
 import com.example.servicesrehabilitation.forumScreen.ForumDetailScreen
 import com.example.servicesrehabilitation.forumScreen.ForumViewModel
+import com.example.servicesrehabilitation.room.AppDatabase
 import com.example.servicesrehabilitation.workersScreen.RehabilitationItemDesc
 import com.example.servicesrehabilitation.workersScreen.RehabilitationList
 import com.example.servicesrehabilitation.workersScreen.WorkerItemDesc
 import com.example.servicesrehabilitation.workersScreen.WorkerScreen
 
 @Composable
-
 fun AppNavGraph(
     navHostController: NavHostController,
+    appDatabase: AppDatabase,
     serviceScreenContent: @Composable () -> Unit,
     forumScreenContent: @Composable () -> Unit,
     profileScreenContent: @Composable () -> Unit,
@@ -48,13 +49,13 @@ fun AppNavGraph(
             arguments = listOf(navArgument("serviceType") { type = NavType.StringType })
         ){
             val serviceType = it.arguments?.getString("serviceType")
-            WorkerScreen(serviceType = serviceType ?: "", navController = navHostController)
+            WorkerScreen(serviceType = serviceType ?: "", navController = navHostController, appDatabase = appDatabase)
         }
         composable(
             "detail_worker_screen/{workerId}",
             arguments = listOf(navArgument("workerId") { type = NavType.IntType })
         ) { backStackEntry ->
-            WorkerItemDesc(navController = navHostController,workerId = backStackEntry.arguments?.getInt("workerId") ?: 0)
+            WorkerItemDesc(navController = navHostController,workerId = backStackEntry.arguments?.getInt("workerId") ?: 0,appDatabase = appDatabase)
         }
         composable("rehabilitation_list"){
             RehabilitationList(navController = navHostController)

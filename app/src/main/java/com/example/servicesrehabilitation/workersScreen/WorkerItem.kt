@@ -29,17 +29,26 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import coil.compose.rememberAsyncImagePainter
-import com.example.servicesrehabilitation.domain.Service
+import com.example.servicesrehabilitation.ProfileScreenViewModel
+import com.example.servicesrehabilitation.R
+import com.example.servicesrehabilitation.domain.AppointmentModel
+import com.example.servicesrehabilitation.room.AppDatabase
+import com.example.servicesrehabilitation.room.UserTokenRepository
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
@@ -47,9 +56,10 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun WorkerItemDesc(
-    navController: NavController, workerId: Int
+    navController: NavController, workerId: Int, appDatabase: AppDatabase
 ) {
-    val viewModel: WorkerViewModel = viewModel()
+    val factory = WorkerViewModelFactory(appDatabase)
+    val viewModel: WorkerViewModel = viewModel(factory = factory)
     val workerInfo = viewModel.workerInfo.collectAsState()
     val loadingState = viewModel.loadingState.collectAsState()
     when (loadingState.value) {
@@ -58,7 +68,7 @@ fun WorkerItemDesc(
         }
         LoadingState.SUCCESS -> {
             Log.d("test2", "LoadingState  : ${workerInfo.value}")
-            WorkerDetail(workerInfo.value[workerId-1])
+            WorkerDetail(workerInfo.value[workerId-1],viewModel)
         }
         LoadingState.ERROR -> {
             Text("Произошла ошибка при загрузке данных.")
@@ -67,16 +77,16 @@ fun WorkerItemDesc(
 }
 
 @Composable
-fun WorkerDetail(workerInfo: WorkerInfo){
+fun WorkerDetail(workerInfo: WorkerInfo, viewModel: WorkerViewModel){
     val showDialog = remember { mutableStateOf(false) }
-    Card(
+    val backGroundColor = colorResource(id = R.color.custom_light_blue)
+    Box(modifier = Modifier.fillMaxSize().background(backGroundColor)){
+        Card(
         modifier = Modifier
             .padding(8.dp, bottom = 80.dp)
-            .background(Color.White)
             .verticalScroll(rememberScrollState())
     ) {
         Column(
-            modifier = Modifier.background(Color.White)
         ) {
             WorkerHeaderDesc(workerInfo)
             Spacer(modifier = Modifier.height(8.dp))
@@ -94,7 +104,8 @@ fun WorkerDetail(workerInfo: WorkerInfo){
                 AlertDialog(
                     onDismissRequest = { showDialog.value = false },
                     title = { Text("Запись на услугу") },
-                    text = { BookingDialog(workerInfo = workerInfo) },
+                    text = { BookingDialog(workerInfo = workerInfo,
+                        viewModel, onClose = { showDialog.value = false })},
                     confirmButton = {
                         Button(onClick = { showDialog.value = false }) {
                             Text("Закрыть")
@@ -104,74 +115,84 @@ fun WorkerDetail(workerInfo: WorkerInfo){
             }
         }
     }
-}
+        }
+    }
+
     @Composable
     fun WorkerItem(
         workerInfo: WorkerInfo,
         onClick: () -> Unit
     ) {
-        Row(
-            modifier = Modifier.clickable(onClick = onClick).padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-            modifier = Modifier
-                .size(50.dp),
-            painter = rememberAsyncImagePainter(model = workerInfo.workerResId),
-            contentDescription = "null"
-        )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(
-                modifier = Modifier.weight(1f)
+        Card(Modifier.padding(8.dp)){
+            Row(
+                modifier = Modifier.clickable(onClick = onClick).padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = workerInfo.workerName)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = workerInfo.workerCost + "₽")
-            }
+                Image(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape),
+                    painter = rememberAsyncImagePainter(model = workerInfo.workerResId),
 
-            Icon(
-                imageVector = Icons.Rounded.MoreVert,
-                contentDescription = "null",
-
+                    contentDescription = "null"
                 )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = workerInfo.workerName)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = workerInfo.workerCost + "₽")
+                }
+
+                Icon(
+                    imageVector = Icons.Rounded.MoreVert,
+                    contentDescription = "null",
+
+                    )
+            }
         }
+
     }
 
     @Composable
     fun WorkerHeaderDesc(workerInfo: WorkerInfo) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-            modifier = Modifier
-                .size(100.dp),
-            painter = rememberAsyncImagePainter(model = workerInfo.workerResId),
-            contentDescription = "null"
-        )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column(
-                modifier = Modifier.weight(1f)
+        Card(Modifier.padding(8.dp)){
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = workerInfo.workerName)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Опыт работы - ${workerInfo.workerExperience}")
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+                Image(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape),
+                    painter = rememberAsyncImagePainter(model = workerInfo.workerResId),
+                    contentDescription = "null"
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Icon(imageVector = Icons.Filled.Star, contentDescription = null)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(text = "5", fontSize = 16.sp)
-                }
+                    Text(text = workerInfo.workerName)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Опыт работы - ${workerInfo.workerExperience}")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(imageVector = Icons.Filled.Star, contentDescription = null)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = "5", fontSize = 16.sp)
+                    }
 
+                }
             }
         }
+
     }
 
     @Composable
-    fun BookingDialog(workerInfo: WorkerInfo) {
-        val viewModel: WorkerViewModel = viewModel()
+    fun BookingDialog(workerInfo: WorkerInfo, viewModel: WorkerViewModel, onClose: () -> Unit) {
         var selectedDate by remember { mutableStateOf(LocalDate.now()) }
         var selectedTime by remember { mutableStateOf(LocalTime.now()) }
         val context = LocalContext.current
@@ -196,18 +217,19 @@ fun WorkerDetail(workerInfo: WorkerInfo){
             }) {
                 Text("Выберите время")
             }
-            Text("Выбранное время: ${selectedTime.format(DateTimeFormatter.ISO_TIME)}")
+            val formatter = DateTimeFormatter.ofPattern("HH:mm")
+            Text("Выбранное время: ${selectedTime.format(formatter)}")
 
             Button(onClick = {
-                val service = Service(
-                    id = 0,
-                    user_token = "123123",
-                    perfomer_name = "SDfsdf",
-                    sevice_name = "asdad",
-                    perfomer_id = 5,
-                    date = "qweqeqwe"
+                val service = AppointmentModel(
+                    user_token = viewModel.userToken.value,
+                    service_name = workerInfo.workerService,
+                    performer_name = workerInfo.workerName,
+                    performer_id = 5,
+                    date = "${selectedDate.format(DateTimeFormatter.ISO_DATE)} ${selectedTime.format(formatter)}"
                 )
                 viewModel.bookService(service)
+                onClose()
             }) {
                 Text("Записаться")
             }
