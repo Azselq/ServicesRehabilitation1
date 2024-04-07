@@ -62,13 +62,15 @@ fun WorkerItemDesc(
     val viewModel: WorkerViewModel = viewModel(factory = factory)
     val workerInfo = viewModel.workerInfo.collectAsState()
     val loadingState = viewModel.loadingState.collectAsState()
+    val worker = viewModel.worker.collectAsState()
     when (loadingState.value) {
         LoadingState.LOADING -> {
             CircularProgressIndicator()
         }
         LoadingState.SUCCESS -> {
             Log.d("test2", "LoadingState  : ${workerInfo.value}")
-            WorkerDetail(workerInfo.value[workerId-1],viewModel)
+            viewModel.getWorker(workerId)
+            WorkerDetail(worker.value,viewModel)
         }
         LoadingState.ERROR -> {
             Text("Произошла ошибка при загрузке данных.")
@@ -80,7 +82,9 @@ fun WorkerItemDesc(
 fun WorkerDetail(workerInfo: WorkerInfo, viewModel: WorkerViewModel){
     val showDialog = remember { mutableStateOf(false) }
     val backGroundColor = colorResource(id = R.color.custom_light_blue)
-    Box(modifier = Modifier.fillMaxSize().background(backGroundColor)){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(backGroundColor)){
         Card(
         modifier = Modifier
             .padding(8.dp, bottom = 80.dp)
@@ -125,7 +129,9 @@ fun WorkerDetail(workerInfo: WorkerInfo, viewModel: WorkerViewModel){
     ) {
         Card(Modifier.padding(8.dp)){
             Row(
-                modifier = Modifier.clickable(onClick = onClick).padding(8.dp),
+                modifier = Modifier
+                    .clickable(onClick = onClick)
+                    .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(

@@ -55,7 +55,7 @@ fun RehabilitationItem(
             modifier = Modifier
                 .clickable(onClick = onClick)
                 .padding(4.dp)
-                .height(40.dp)
+                .fillMaxWidth()
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {

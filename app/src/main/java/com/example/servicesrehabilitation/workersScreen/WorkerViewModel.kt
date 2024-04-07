@@ -28,6 +28,8 @@ class WorkerViewModel(appDatabase: AppDatabase) : ViewModel(){
     val appointmentService = RetrofitInstanceForService.service
     val appointmentRepository = ServiceRepository(appointmentService)
     val userToken = MutableStateFlow<String>("")
+    private val _worker = MutableStateFlow<WorkerInfo>(WorkerInfo())
+    val worker: StateFlow<WorkerInfo> = _worker.asStateFlow()
     val appDatabase = appDatabase
     init{
         getAllWorker()
@@ -64,6 +66,16 @@ class WorkerViewModel(appDatabase: AppDatabase) : ViewModel(){
     fun getAuthToken(){
         viewModelScope.launch {
             userToken.value = appDatabase.authTokenDao().getAuthToken()?.token.toString()
+        }
+    }
+
+    fun getWorker(workerId: Int){
+        viewModelScope.launch {
+            val response = workerRepository.getForumPost(workerId)
+            if (response.isSuccessful) {
+                _worker.value = response.body()!!
+            } else {
+            }
         }
     }
 }

@@ -24,6 +24,9 @@ class ForumViewModel : ViewModel(){
     val forumPosts: StateFlow<List<ForumPost>> = _forumPosts.asStateFlow()
     private val _loadingState = MutableStateFlow<LoadingState>(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private val _forumPost = MutableStateFlow<ForumPost>(ForumPost())
+    val forumPost: StateFlow<ForumPost> = _forumPost.asStateFlow()
     init{
         getAllForum()
     }
@@ -39,6 +42,18 @@ class ForumViewModel : ViewModel(){
                 Log.d("test", "test getUser : ${_forumPosts.value}")
             } else {
                 _loadingState.value = LoadingState.ERROR
+            }
+        }
+    }
+
+
+    fun getForumPost(postId: Int){
+        viewModelScope.launch {
+            val response = forumRepository.getForumPost(postId)
+            if (response.isSuccessful) {
+                _forumPost.value = response.body()!!
+                Log.d("test", "test getUser : ${_forumPosts.value}")
+            } else {
             }
         }
     }

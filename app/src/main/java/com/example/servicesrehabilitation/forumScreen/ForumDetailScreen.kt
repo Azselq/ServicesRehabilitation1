@@ -46,13 +46,16 @@ import com.example.servicesrehabilitation.workersScreen.LoadingState
 fun ForumDetailScreen(navController: NavController, postId: Int) {
     val viewModel: ForumViewModel = viewModel()
     val forumPost = viewModel.forumPosts.collectAsState()
+    val post = viewModel.forumPost.collectAsState()
     val loadingState = viewModel.loadingState.collectAsState()
+    Log.d("oliClown", "$postId")
     when (loadingState.value) {
         LoadingState.LOADING -> {
             CircularProgressIndicator()
         }
         LoadingState.SUCCESS -> {
-            ForumDetail(forumPost.value[postId-1])
+            viewModel.getForumPost(postId)
+            ForumDetail(post.value)
         }
         LoadingState.ERROR -> {
             Text("Произошла ошибка при загрузке данных.")
@@ -64,9 +67,14 @@ fun ForumDetailScreen(navController: NavController, postId: Int) {
 @Composable
 fun ForumDetail(forumPost: ForumPost){
     val backGroundColor = colorResource(id = R.color.custom_light_blue)
-    Box(modifier = Modifier.fillMaxSize().background(backGroundColor)){
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(backGroundColor)){
         Card(
-            modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()).fillMaxSize()
+            modifier = Modifier
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier.padding(8.dp)

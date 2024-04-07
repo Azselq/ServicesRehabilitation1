@@ -50,7 +50,7 @@ fun ForumScreen(
             key = { it.id }
         ) {
             ForumItem(forumPost = it) {
-                println("Нажатие на пост с ID: ${it}")
+                println("Нажатие на пост с ID: ${it.id}")
                 navController.navigate("detail_screen/${it.id}") {
                     launchSingleTop = true
                 }

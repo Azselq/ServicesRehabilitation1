@@ -44,6 +44,9 @@ class WorkerRepository( private val workersService: WorkersService) {
     suspend fun getAllWorkers(): Response<List<WorkerInfo>>{
         return workersService.getAllWorkers()
     }
+    suspend fun getForumPost(post_id: Int): Response<WorkerInfo> {
+        return workersService.getWorker(post_id)
+    }
 }
 
 class RehabilitationRepository( private val rehabilitationService: RehabilitationService) {
@@ -58,6 +61,9 @@ class ForumRepository( private val forumService: ForumService) {
 
     suspend fun getAllWorkers(): Response<List<ForumPost>>{
         return forumService.getAllForumPost()
+    }
+    suspend fun getForumPost(post_id: Int): Response<ForumPost> {
+        return forumService.getForumPost(post_id)
     }
 }
 

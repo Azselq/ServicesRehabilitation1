@@ -76,7 +76,7 @@ fun PostHeaderDesc(
         ) {
             Text(text = forumPost.userName)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "14:00")
+            Text(text = forumPost.publicationTime)
         }
 
         Icon(

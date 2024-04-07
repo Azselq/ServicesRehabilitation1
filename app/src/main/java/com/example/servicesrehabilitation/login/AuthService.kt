@@ -35,6 +35,8 @@ interface AuthService {
 interface WorkersService {
     @GET("workers/")
     suspend fun getAllWorkers(): Response<List<WorkerInfo>>
+    @GET("/workers/{worker_id}")
+    suspend fun getWorker(@Path("worker_id") worker_id:Int): Response<WorkerInfo>
 }
 
 interface RehabilitationService {
@@ -45,6 +47,8 @@ interface RehabilitationService {
 interface ForumService {
     @GET("forum_posts/")
     suspend fun getAllForumPost(): Response<List<ForumPost>>
+    @GET("/forum_posts/{post_id}")
+    suspend fun getForumPost(@Path("post_id") post_id:Int): Response<ForumPost>
 }
 
 interface AppointmentService {
